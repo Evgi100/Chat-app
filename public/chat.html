@@ -12,7 +12,7 @@
 <body class="chat">
 
     <div class="chat__sidebar">
-        <h3>People</h3>
+        <h3 >People</h3>
         <div id="users"></div>
     </div>
 
@@ -21,13 +21,13 @@
         <div class="chat__footer">
             <form id="message-form">
                 <input name="message" type="text" placeholder="Message" autofocus autocomplete="off" />
-                <button>Send</button>
-                <button id="send-location">Send Location</button>
+                <button id="message-form-btn__send">Send</button>
+                <button id="message-form-btn__location">Send Location</button>
             </form>
         </div>
     </div>
     <script id="message-template" type="text/template">
-        <li class=""message>
+        <li class="message speech-bubble">
             <div class="message__title">
                 <h4>{{from}}</h4>
                 <span>{{createdAt}}</span>
@@ -39,7 +39,7 @@
     </script>
 
     <script id="location-message-template" type="text/template">
-        <li class=""message>
+        <li class="speech-bubble message">
             <div class="message__title">
                 <h4>{{from}}</h4>
                 <span>{{createdAt}}</span>

@@ -17,22 +17,19 @@ class Users {
 
     removeUser(id) {
         var user = this.getUser(id);
-
-        if (user) {
-            this.users.filter((user) => user.id !== id);
-        }
-
+    this.users=this.users.filter((user) => user.id !== id);
         return user;
     }
 
     getUser(id) {
         return this.users.filter((user) => user.id === id)[0]
     }
-    
-    getUserList(room) {
+
+    getUserList(room, userName) {
         var users = this.users.filter((user) => user.room === room)
         var namesArray = users.map((user) => user.name);
-        return namesArray
+        var unique = namesArray.filter((v, i, a) => a.indexOf(v) === i)
+        return unique
     }
 }
 

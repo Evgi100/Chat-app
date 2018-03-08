@@ -1,5 +1,6 @@
 const express = require('express');
 
+const port=process.env.PORT || 3000;
 const app = express();
 
 const path = require('path');
@@ -31,26 +32,28 @@ io.on('connection', (socket) => {
             return callback('Name and Room are required')
         }
         socket.join(params.room);
-        users.removeUser(socket.id);
-        users.addUser(socket.id, params.name, params.room);
-        io.to(params.room).emit('updateUserList', users.getUserList(params.room))
+        // users.removeUser(socket.id);
+        if (!users.getUser(socket.id)) {
 
-        socket.emit('welcomeMessage', generateMessage('Admin', `${params.name} Welcome to the chat app`));
-        socket.broadcast.to(params.room).emit('newUser', generateMessage('Admin', `${params.name} has joined`))
+            users.addUser(socket.id, params.name, params.room);
+            io.to(params.room).emit('updateUserList', users.getUserList(params.room,params.name))
+            socket.emit('welcomeMessage', generateMessage('Admin', `${params.name} Welcome to the chat app`));
+            socket.broadcast.to(params.room).emit('newUser', generateMessage('Admin', `${params.name} has joined`))
+            callback();
+        }
 
-        callback();
     })
     socket.on('createMessage', (message, callback) => {
         var user = users.getUser(socket.id);
         if (user && isRealString(message.text)) {
-            io.to(user.room).emit('newMessage',generateMessage(user.name,message.text))
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text))
         }
         callback();
     })
 
     socket.on('createLocationMessage', (coords) => {
         var user = users.getUser(socket.id);
-        if(user){
+        if (user) {
             io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude))
         }
     })
@@ -59,7 +62,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         var user = users.removeUser(socket.id);
         if (user) {
-            io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room,user.name))
             io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left`));
         }
     });
@@ -67,7 +70,7 @@ io.on('connection', (socket) => {
 
 
 
-server.listen(3000, () => {
+server.listen(port, () => {
     console.log('Yo Yo on 3000');
 })
 
